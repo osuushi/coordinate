@@ -22,6 +22,7 @@ const start = () => {
   localStorage.name = userName
   document.getElementById("main").innerHTML = `
     <div id="status"></div>
+    <hr>
     <div id="self">
       <div>
         <button onclick="setReady()" id="ready">I'm Ready!</button>
@@ -29,7 +30,7 @@ const start = () => {
       <div>
         <button onclick="resetRoom()">Reset Room</button>
       </div>
-      <input type="text" id="name" placeholder="Enter Name" oninput="editUser()">
+      <label> Name: <input type="text" id="name" placeholder="Enter Name" oninput="editUser()"></label>
     </div>
   `
   document.getElementById("name").value = userName
@@ -108,8 +109,9 @@ const render = () => {
   for (let {name, status} of statuses) {
     let icon = status ? "✅" : "❌"
     let el = document.createElement("div")
+    el.style.fontSize = "2em"
     el.textContent = `${icon} ${name}`
-    rows.push(el)  
+    rows.push(el)
   }
   document.getElementById("status").innerHTML = allReady ? "<h1>All Ready!</h1>" : "<h1>Waiting for others...</h1>"
   document.getElementById("status").append(...rows)
