@@ -3,6 +3,7 @@ package main
 import (
 	_ "embed"
 	"encoding/json"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -41,9 +42,13 @@ func handleRoom(w http.ResponseWriter, r *http.Request) {
 	} else if r.Method == "POST" {
 		// Parse the id from the URL
 		roomId := r.URL.Path[len("/room/"):]
+		if len(roomId) < 8 || len(roomId) > 32 {
+			http.Error(w, "Invalid room id", http.StatusBadRequest)
+		}
+
 		// Parse the room data from the body
 		room := &Room{}
-		if err := json.NewDecoder(r.Body).Decode(room); err != nil {
+		if err := json.NewDecoder(io.LimitReader(r.Body, 4096)).Decode(room); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
