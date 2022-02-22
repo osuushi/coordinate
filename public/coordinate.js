@@ -23,8 +23,12 @@ const start = () => {
   document.getElementById("main").innerHTML = `
     <div id="status"></div>
     <div id="self">
-      <button onclick="setReady()" id="ready">I'm Ready!</button>
-      <button onclick="resetRoom()">Reset Room</button>
+      <div>
+        <button onclick="setReady()" id="ready">I'm Ready!</button>
+      </div>
+      <div>
+        <button onclick="resetRoom()">Reset Room</button>
+      </div>
       <input type="text" id="name" placeholder="Enter Name" oninput="editUser()">
     </div>
   `
