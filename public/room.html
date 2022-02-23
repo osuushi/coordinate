@@ -4,7 +4,6 @@
 <head>
   <link rel="stylesheet" href="https://unpkg.com/mvp.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Coordinate</title>
 </head>
 <body>
@@ -12,7 +11,13 @@
   <h1> Enter Name </h1>
   <input type="text" id="name" placeholder="Enter Name">
   <button id="submit" onclick="start()">Submit</button>
+  <label>
+    Share this URL with other players:
+    <input type="text" id="url" value="" style="width:100%" onclick="this.select()">
+  </label>
+  <div id="qrcode"></div>
 </main>
 </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="/coordinate.js"></script>
 </html>

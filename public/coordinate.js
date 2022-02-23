@@ -17,6 +17,10 @@ if (localStorage.name != null) {
   document.getElementById("name").value = userName
 }
 
+document.getElementById("url").value = window.location.href
+// Populate the qr code
+new QRCode(document.getElementById("qrcode"), window.location.href)
+
 const start = () => {
   userName = document.getElementById("name").value
   localStorage.name = userName
