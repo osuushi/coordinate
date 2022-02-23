@@ -18,6 +18,9 @@ var roomHtml string
 //go:embed public/coordinate.js
 var coordinateJs string
 
+//go:embed public/sound.mp3
+var soundMp3 []byte
+
 func main() {
 	port := 1234
 	if len(os.Args) > 1 {
@@ -26,6 +29,7 @@ func main() {
 	http.HandleFunc("/", handleRoot)
 	http.HandleFunc("/room/", handleRoom)
 	http.HandleFunc("/coordinate.js", handleJs)
+	http.HandleFunc("/sound.mp3", handleSound)
 	http.ListenAndServe(":"+strconv.Itoa(port), nil)
 }
 
@@ -65,4 +69,11 @@ func handleRoom(w http.ResponseWriter, r *http.Request) {
 
 func handleJs(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(coordinateJs))
+}
+
+func handleSound(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "audio/mpeg")
+	// This can be cached aggressively
+	w.Header().Set("Cache-Control", "public, max-age=31536000")
+	w.Write(soundMp3)
 }

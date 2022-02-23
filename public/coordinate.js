@@ -5,6 +5,8 @@ let room = {
   statuses: {},
 }
 
+const audio = new Audio('/sound.mp3')
+
 if (localStorage.id == null) {
   id = Math.random().toString(36).substring(2) + Math.random().toString(36).substring(2)
   localStorage.id = id
@@ -22,6 +24,7 @@ document.getElementById("url").value = window.location.href
 new QRCode(document.getElementById("qrcode"), window.location.href)
 
 const start = () => {
+  audio.load()
   userName = document.getElementById("name").value
   localStorage.name = userName
   document.getElementById("main").innerHTML = `
@@ -61,7 +64,9 @@ const update = async () => {
       body: JSON.stringify(room),
     })
     const newRoom = await response.json()
+    let wasAlready = isAllReady()
     applyLWW(newRoom)
+    playSoundIfNeeded(wasAlready)
   } catch { }
 }
 
@@ -95,17 +100,23 @@ const loop = async () => {
   setTimeout(loop, 1000)
 }
 
+const isAllReady = () => {
+  let allReady = true
+  for (let id in room.statuses) {
+    if (!room.statuses[id].value) {
+      allReady = false
+    }
+  }
+  return allReady
+}
+
 // Render the current state of the room
 const render = () => {
-  statuses = []
-  let allReady = true
+  let statuses = []
   for (let id in room.statuses) {
     let name = room.users[id].value
     let status = room.statuses[id].value
     statuses.push({name, status})
-    if (!status) {
-      allReady = false
-    }
   }
   statuses.sort((a, b) => a.name.localeCompare(b.name))
 
@@ -117,7 +128,7 @@ const render = () => {
     el.textContent = `${icon} ${name}`
     rows.push(el)
   }
-  document.getElementById("status").innerHTML = allReady ? "<h1>All Ready!</h1>" : "<h1>Waiting for others...</h1>"
+  document.getElementById("status").innerHTML = isAllReady() ? "<h1>All Ready!</h1>" : "<h1>Waiting for others...</h1>"
   document.getElementById("status").append(...rows)
 
   // Update the ready button
@@ -140,4 +151,30 @@ const resetRoom = function () {
     room.statuses[id].timestamp = Date.now()
   }
   render()
+}
+
+const playSound = () => {
+  let instance = audio.cloneNode()
+  instance.play()
+}
+
+// Play the sound if:
+// 1. This user was first to set ready this time
+// 2. Was not previously ready
+// 3. Is now ready
+const playSoundIfNeeded = (wasAlready) => {
+  // Only play the sound if transitioned to ready
+  if (wasAlready || !isAllReady()) return
+  // Check if this was the first user to set ready
+  let myTimestamp = room.statuses[id].timestamp
+  let first = true
+  for (let id in room.statuses) {
+    if (room.statuses[id].timestamp < myTimestamp) {
+      first = false
+      break
+    }
+  }
+  if (first) {
+    playSound()
+  }
 }
